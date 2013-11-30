@@ -98,6 +98,15 @@ namespace Thinktecture.IdentityServer.Core.Repositories.Migrations.SqlCe
                         Enabled = c.Boolean(nullable: false),
                     })
                 .PrimaryKey(t => t.Id);
+
+            CreateTable(
+                "dbo.FacebookAccessTokenConfiguration",
+                c => new
+                {
+                    Id = c.Int(nullable: false, identity: true),
+                    Enabled = c.Boolean(nullable: false),
+                })
+                .PrimaryKey(t => t.Id);
             
             CreateTable(
                 "dbo.DiagnosticsConfiguration",
@@ -194,6 +203,7 @@ namespace Thinktecture.IdentityServer.Core.Repositories.Migrations.SqlCe
             DropTable("dbo.ClientCertificates");
             DropTable("dbo.DiagnosticsConfiguration");
             DropTable("dbo.SimpleHttpConfiguration");
+            DropTable("dbo.FacebookAccessTokenConfiguration");
             DropTable("dbo.OAuth2Configuration");
             DropTable("dbo.FederationMetadataConfiguration");
             DropTable("dbo.WSTrustConfiguration");

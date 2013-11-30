@@ -307,6 +307,24 @@ namespace Thinktecture.IdentityServer.Repositories.Sql
         }
         #endregion
 
+        #region FacebookAccessTokenConfiguration
+        public static Models.Configuration.FacebookAccessTokenConfiguration ToDomainModel(this Entities.Configuration.FacebookAccessTokenConfiguration entity)
+        {
+            return new Models.Configuration.FacebookAccessTokenConfiguration
+            {
+                Enabled = entity.Enabled
+            };
+        }
+
+        public static Entities.Configuration.FacebookAccessTokenConfiguration ToEntity(this Models.Configuration.FacebookAccessTokenConfiguration model)
+        {
+            return new Entities.Configuration.FacebookAccessTokenConfiguration
+            {
+                Enabled = model.Enabled
+            };
+        }
+        #endregion
+
         #region DiagnosticsConfiguration
         public static Models.Configuration.DiagnosticsConfiguration ToDomainModel(this Entities.Configuration.DiagnosticsConfiguration entity)
         {

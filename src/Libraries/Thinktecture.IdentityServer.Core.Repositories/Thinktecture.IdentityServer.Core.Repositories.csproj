@@ -75,6 +75,7 @@
     <Compile Include="CodeTokenRepository.cs" />
     <Compile Include="ConfigurationDatabaseInitializer.cs" />
     <Compile Include="ClientsRepository.cs" />
+    <Compile Include="EntityModel\Configuration\FacebookAccessTokenConfiguration.cs" />
     <Compile Include="Migrations.SqlServer\201307241918180_OIDC.cs" />
     <Compile Include="Migrations.SqlServer\201307241918180_OIDC.Designer.cs">
       <DependentUpon>201307241918180_OIDC.cs</DependentUpon>

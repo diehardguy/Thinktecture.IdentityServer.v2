@@ -136,6 +136,11 @@ namespace Thinktecture.IdentityServer.Web.Controllers
                 list.Add("Simple HTTP", endpoints.SimpleHttp.AbsoluteUri);
             }
 
+            if (Configuration.FacebookAccessToken.Enabled)
+            {
+                list.Add("Facebook Access Token", endpoints.FacebookAccessToken.AbsoluteUri);
+            }
+
             return View(list);
         }
     }

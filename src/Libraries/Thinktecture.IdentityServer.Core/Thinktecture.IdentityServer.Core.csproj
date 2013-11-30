@@ -126,6 +126,7 @@
     <Compile Include="Models\CodeToken.cs" />
     <Compile Include="Models\CodeTokenType.cs" />
     <Compile Include="Models\Configuration\AdfsIntegrationConfiguration.cs" />
+    <Compile Include="Models\Configuration\FacebookAccessTokenConfiguration.cs" />
     <Compile Include="Models\Configuration\OpenIdConnectConfiguration.cs" />
     <Compile Include="Models\Configuration\SimpleHttpConfiguration.cs" />
     <Compile Include="Models\Configuration\KeyMaterialConfiguration.cs" />
@@ -218,6 +219,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ProtocolConfiguration.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\Models\Configuration\FacebookAccessTokenConfiguration.Designer.cs">
+      <DependentUpon>FacebookAccessTokenConfiguration.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Resources\Models\Configuration\SimpleHttpConfiguration.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -377,6 +383,13 @@
     <EmbeddedResource Include="Resources\Models\Configuration\ProtocolConfiguration.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ProtocolConfiguration.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Models\Configuration\FacebookAccessTokenConfiguration.fr.resx">
+      <DependentUpon>FacebookAccessTokenConfiguration.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Models\Configuration\FacebookAccessTokenConfiguration.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>FacebookAccessTokenConfiguration.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\Models\Configuration\SimpleHttpConfiguration.fr.resx">
       <DependentUpon>SimpleHttpConfiguration.resx</DependentUpon>

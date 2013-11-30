@@ -9,6 +9,13 @@ using Thinktecture.IdentityModel.Tokens.Http;
 using Thinktecture.IdentityServer.Protocols.WSTrust;
 using Thinktecture.IdentityServer.Repositories;
 using Thinktecture.IdentityServer.TokenService;
+using Thinktecture.IdentityModel.Tokens;
+using System.Text;
+using System.Collections.Generic;
+using System.Security.Cryptography;
+using Facebook;
+using System.Security.Claims;
+using System.Security.Principal;
 
 namespace Thinktecture.IdentityServer.Web
 {
@@ -149,6 +156,18 @@ namespace Thinktecture.IdentityServer.Web
                 );
             }
 
+            // facebook access token http endpoint
+            if (configuration.FacebookAccessToken.Enabled)
+            {
+                routes.MapHttpRoute(
+                    name: "facebookaccesstoken",
+                    routeTemplate: Thinktecture.IdentityServer.Endpoints.Paths.FacebookAccessToken,
+                    defaults: new { controller = "FacebookAccessToken" },
+                    constraints: null,
+                    handler: new AuthenticationHandler(CreateFacebookAuthenticationConfiguration(configuration, users), httpConfiguration)
+                );
+            }
+
             // ws-trust
             if (configuration.WSTrust.Enabled)
             {
@@ -170,7 +189,8 @@ namespace Thinktecture.IdentityServer.Web
                 ClaimsAuthenticationManager = new ClaimsTransformer()
             };
 
-            authConfig.AddBasicAuthentication((userName, password) => userRepository.ValidateUser(userName, password));
+            authConfig.AddBasicAuthentication((userName, password) 
+                => userRepository.ValidateUser(userName, password));
             return authConfig;
         }
 
@@ -187,6 +207,55 @@ namespace Thinktecture.IdentityServer.Web
             authConfig.AddBasicAuthentication((id, secret) => true, retainPassword: true);
             return authConfig;
         }
+
+        public static AuthenticationConfiguration CreateFacebookAuthenticationConfiguration(IConfigurationRepository configuration, IUserRepository userRepository)
+        {
+            var authConfig = new AuthenticationConfiguration
+            {
+                RequireSsl = !configuration.Global.DisableSSL,
+                InheritHostClientIdentity = false
+            };
+
+            var handler = new SimpleSecurityTokenHandler("fbAccessToken", token =>
+            {
+                //Generate the HMAC require to access users data on FB by hashing the accessToken with AppSecret
+                //Facebook app requires appsecret_proof for all access
+                var encoding = new UTF8Encoding();
+                byte[] keyBytes = encoding.GetBytes("dbbdab63d577eff46042b45cfb3b0c5b");
+                byte[] dataBytes = encoding.GetBytes(token);
+                HMACSHA256 hmac = new HMACSHA256(keyBytes);
+                byte[] hmacBytes = hmac.ComputeHash(dataBytes);
+
+                //Create Facebook Client
+                FacebookClient client = new FacebookClient(token);
+
+                //Adding appsecret_Proof to Facebook request
+                var parameters = new Dictionary<string, object>();
+                string hexAppSecretProof = System.BitConverter.ToString(hmacBytes).Replace("-", "").ToLower();
+                parameters["appsecret_proof"] = hexAppSecretProof.ToLower();
+
+                //Get the users data from facebook
+                try
+                {
+                    dynamic me = client.Get("me?fields=id,email,first_name,last_name,about,location,website", parameters);
+                    ClaimsPrincipal principle =
+                        new ClaimsPrincipal(new GenericPrincipal(new GenericIdentity(me.id, Constants.AuthenticationType), new string[] { "IdentityServerUsers" }));
+                    return principle;
+                }
+                catch (FacebookApiException ex)
+                {
+                    
+                }
+
+                return null;
+            });
+
+            authConfig.AddAccessKey(handler, AuthenticationOptions.ForAuthorizationHeader("FB"));
+
+            return authConfig;
+        }
+
+        
 
         public static AuthenticationConfiguration CreateUserInfoAuthConfig(IConfigurationRepository configuration)
         {

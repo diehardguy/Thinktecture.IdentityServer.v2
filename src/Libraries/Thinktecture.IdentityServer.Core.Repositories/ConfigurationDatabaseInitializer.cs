@@ -34,6 +34,7 @@ namespace Thinktecture.IdentityServer.Repositories.Sql
                         context.OAuth2.Add(CreateTestOAuth2Configuration());
                         context.AdfsIntegration.Add(CreateTestAdfsIntegrationConfiguration());
                         context.SimpleHttp.Add(CreateTestSimpleHttpConfiguration());
+                        context.FacebookAccessToken.Add(CreateTestFacebookAccessTokenConfiguration());
                         context.Diagnostics.Add(CreateTestDiagnosticsConfiguration());
                         context.OpenIdConnect.Add(CreateTestOpenIdConnectConfiguration());
 
@@ -58,6 +59,7 @@ namespace Thinktecture.IdentityServer.Repositories.Sql
             if (!context.OAuth2.Any()) context.OAuth2.Add(CreateDefaultOAuth2Configuration());
             if (!context.AdfsIntegration.Any()) context.AdfsIntegration.Add(CreateDefaultAdfsIntegrationConfiguration());
             if (!context.SimpleHttp.Any()) context.SimpleHttp.Add(CreateDefaultSimpleHttpConfiguration());
+            if (!context.FacebookAccessToken.Any()) context.FacebookAccessToken.Add(CreateDefaultFacebookAccessTokenConfiguration());
             if (!context.Diagnostics.Any()) context.Diagnostics.Add(CreateDefaultDiagnosticsConfiguration());
             if (!context.OpenIdConnect.Any()) context.OpenIdConnect.Add(CreateOpenIdConnectConfiguration());
         }
@@ -145,6 +147,14 @@ namespace Thinktecture.IdentityServer.Repositories.Sql
         private static SimpleHttpConfiguration CreateDefaultSimpleHttpConfiguration()
         {
             return new SimpleHttpConfiguration
+            {
+                Enabled = false
+            };
+        }
+
+        private static FacebookAccessTokenConfiguration CreateDefaultFacebookAccessTokenConfiguration()
+        {
+            return new FacebookAccessTokenConfiguration
             {
                 Enabled = false
             };
@@ -256,6 +266,14 @@ namespace Thinktecture.IdentityServer.Repositories.Sql
         private static SimpleHttpConfiguration CreateTestSimpleHttpConfiguration()
         {
             return new SimpleHttpConfiguration
+            {
+                Enabled = true
+            };
+        }
+
+        private static FacebookAccessTokenConfiguration CreateTestFacebookAccessTokenConfiguration()
+        {
+            return new FacebookAccessTokenConfiguration
             {
                 Enabled = true
             };

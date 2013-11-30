@@ -28,6 +28,8 @@ namespace Thinktecture.IdentityServer
         public Uri OidcUserInfo { get; set; }
 
         public Uri SimpleHttp { get; set; }
+
+        public Uri FacebookAccessToken { get; set; }
         public Uri AdfsIntegration { get; set; }
         public Uri Wrap { get; set; }
         public Uri OAuth2Token { get; set; }
@@ -46,6 +48,7 @@ namespace Thinktecture.IdentityServer
             public const string PrivacyNotice = "privacyNotice.txt";
             public const string WSTrustBase = "issue/wstrust";
             public const string SimpleHttp = "issue/simple";
+            public const string FacebookAccessToken = "issue/facebook";
             public const string Wrap = "issue/wrap";
             public const string OAuth2Token = "issue/oauth2/token";
             public const string OAuth2Authorize = "issue/oauth2/authorize";
@@ -110,6 +113,12 @@ namespace Thinktecture.IdentityServer
             builder.Scheme = Uri.UriSchemeHttps;
             builder.Port = httpsPort;
             ep.SimpleHttp = builder.Uri;
+
+            var facebookAccessToken = new Uri(baseUriString + Paths.FacebookAccessToken);
+            builder = new UriBuilder(facebookAccessToken);
+            builder.Scheme = Uri.UriSchemeHttps;
+            builder.Port = httpsPort;
+            ep.FacebookAccessToken = builder.Uri;
 
             var wrap = new Uri(baseUriString + Paths.Wrap);
             builder = new UriBuilder(wrap);

@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (c) Dominick Baier, Brock Allen.  All rights reserved.
+ * Copyright (c) Damian Young.  All rights reserved.
  * see license.txt
  */
 
@@ -14,27 +14,26 @@ using Thinktecture.IdentityModel.Authorization.WebApi;
 using Thinktecture.IdentityModel.Constants;
 using Thinktecture.IdentityServer.Repositories;
 
-namespace Thinktecture.IdentityServer.Protocols.SimpleHTTP
+namespace Thinktecture.IdentityServer.Protocols.FacebookAccessToken
 {
-    [ClaimsAuthorize(Constants.Actions.Issue, Constants.Resources.SimpleHttp)]
-    public class SimpleHttpController : ApiController
+    [ClaimsAuthorize(Constants.Actions.Issue, Constants.Resources.FacebookAccessToken)]
+    public class FacebookAccessTokenController : ApiController
     {
-        [Import]
-        public IConfigurationRepository ConfigurationRepository { get; set; }
+                public IConfigurationRepository ConfigurationRepository { get; set; }
 
-        public SimpleHttpController()
+        public FacebookAccessTokenController()
         {
             Container.Current.SatisfyImportsOnce(this);
         }
 
-        public SimpleHttpController(IConfigurationRepository configurationRepository)
+        public FacebookAccessTokenController(IConfigurationRepository configurationRepository)
         {
             ConfigurationRepository = configurationRepository;
         }
 
         public HttpResponseMessage Get(HttpRequestMessage request)
         {
-            Tracing.Information("Simple HTTP endpoint called.");
+            Tracing.Information("Facebook HTTP endpoint called.");
 
             var query = request.Headers;
             var realm = query.FirstOrDefault(h => h.Key.Equals("Realm", System.StringComparison.OrdinalIgnoreCase)).Value.FirstOrDefault();
@@ -45,7 +44,7 @@ namespace Thinktecture.IdentityServer.Protocols.SimpleHTTP
             }
 
             EndpointReference ep = new EndpointReference(realm);
-
+           
             TokenResponse tokenResponse;
             var sts = new STS();
             if (sts.TryIssueToken(ep, ClaimsPrincipal.Current, TokenTypes.JsonWebToken, out tokenResponse))
@@ -58,5 +57,6 @@ namespace Thinktecture.IdentityServer.Protocols.SimpleHTTP
                 return request.CreateErrorResponse(HttpStatusCode.BadRequest, "invalid request.");
             }
         }
+
     }
 }

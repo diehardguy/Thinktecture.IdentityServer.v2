@@ -197,6 +197,29 @@ namespace Thinktecture.IdentityServer.Repositories.Sql
                 }
             }
         }
+        
+        public virtual Models.Configuration.FacebookAccessTokenConfiguration FacebookAccessToken
+        {
+            get
+            {
+                using (var entities = IdentityServerConfigurationContext.Get())
+                {
+                    var entity = entities.FacebookAccessToken.First<Entities.Configuration.FacebookAccessTokenConfiguration>();
+                    return entity.ToDomainModel();
+                }
+            }
+            set
+            {
+                using (var entities = IdentityServerConfigurationContext.Get())
+                {
+                    var entity = entities.FacebookAccessToken.First<Entities.Configuration.FacebookAccessTokenConfiguration>();
+                    entities.FacebookAccessToken.Remove(entity);
+
+                    entities.FacebookAccessToken.Add(value.ToEntity());
+                    entities.SaveChanges();
+                }
+            }
+        }
 
         // todo: wire up with DB
         public Models.Configuration.AdfsIntegrationConfiguration AdfsIntegration

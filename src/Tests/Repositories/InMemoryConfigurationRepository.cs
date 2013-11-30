@@ -86,6 +86,18 @@ namespace Thinktecture.IdentityServer.Tests.Repositories
             }
         }
 
+        public Thinktecture.IdentityServer.Models.Configuration.FacebookAccessTokenConfiguration FacebookAccessToken
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public bool SupportsWriteAccess
         {
             get { throw new NotImplementedException(); }

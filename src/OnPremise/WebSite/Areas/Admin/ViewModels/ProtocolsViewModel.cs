@@ -41,6 +41,10 @@ namespace Thinktecture.IdentityServer.Web.Areas.Admin.ViewModels
                 "Simple HTTP",
                 x => x.SimpleHttp,
                 (c, v) => { c.SimpleHttp = (SimpleHttpConfiguration)v; }));
+            protocolMap.Add(new Tuple<string, Func<IConfigurationRepository, ProtocolConfiguration>, Action<IConfigurationRepository, ProtocolConfiguration>>(
+                "Facebook Access Token",
+                x => x.FacebookAccessToken,
+                (c, v) => { c.FacebookAccessToken = (FacebookAccessTokenConfiguration)v; }));
         }
 
         private Repositories.IConfigurationRepository ConfigurationRepository;

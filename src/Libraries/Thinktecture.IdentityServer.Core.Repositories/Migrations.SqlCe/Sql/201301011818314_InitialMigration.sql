@@ -63,6 +63,11 @@ CREATE TABLE [SimpleHttpConfiguration] (
     [Enabled] [bit] NOT NULL,
     CONSTRAINT [PK_dbo.SimpleHttpConfiguration] PRIMARY KEY ([Id])
 )
+CREATE TABLE [FacebookAccessTokenConfiguration] (
+    [Id] [int] NOT NULL IDENTITY,
+    [Enabled] [bit] NOT NULL,
+    CONSTRAINT [PK_dbo.FacebookAccessTokenConfiguration] PRIMARY KEY ([Id])
+)
 CREATE TABLE [DiagnosticsConfiguration] (
     [Id] [int] NOT NULL IDENTITY,
     [EnableFederationMessageTracing] [bit] NOT NULL,
