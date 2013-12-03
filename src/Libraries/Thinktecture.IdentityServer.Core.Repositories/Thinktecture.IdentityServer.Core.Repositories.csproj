@@ -66,10 +66,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Thinktecture.IdentityModel, Version=3.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Thinktecture.IdentityModel.3.4.1\lib\net45\Thinktecture.IdentityModel.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeTokenRepository.cs" />
@@ -189,6 +185,10 @@
     <Compile Include="StoredGrantRepository.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Thinktecture.IdentityModel.45\IdentityModel\Thinktecture.IdentityModel\Thinktecture.IdentityModel.45.csproj">
+      <Project>{ac9a74df-4aab-43c8-b0ed-b7602721e545}</Project>
+      <Name>Thinktecture.IdentityModel.45</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Thinktecture.IdentityServer.Core\Thinktecture.IdentityServer.Core.csproj">
       <Project>{38CE5C59-909E-4DA6-8E1D-7EEE7312CA9A}</Project>
       <Name>Thinktecture.IdentityServer.Core</Name>

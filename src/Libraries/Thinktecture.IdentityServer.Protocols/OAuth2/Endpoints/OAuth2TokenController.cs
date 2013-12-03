@@ -14,6 +14,7 @@ using Thinktecture.IdentityModel.Authorization;
 using Thinktecture.IdentityModel.Constants;
 using Thinktecture.IdentityServer.Models;
 using Thinktecture.IdentityServer.Repositories;
+using Thinktecture.IdentityServer.Protocols.Facebook;
 
 namespace Thinktecture.IdentityServer.Protocols.OAuth2
 {
@@ -70,6 +71,10 @@ namespace Thinktecture.IdentityServer.Protocols.OAuth2
             {
                 return ProcessRefreshTokenRequest(client, tokenRequest.Refresh_Token, tokenType);
             }
+            else if (string.Equals(tokenRequest.Grant_Type, OAuth2Constants.GrantTypes.Assertion, System.StringComparison.Ordinal))
+            {
+                return ProcessResourceOwnerCredentialRequest(tokenRequest, tokenType, client);
+            }
 
             Tracing.Error("invalid grant type: " + tokenRequest.Grant_Type);
             return OAuthErrorResponseMessage(OAuth2Constants.Errors.UnsupportedGrantType);
@@ -80,22 +85,65 @@ namespace Thinktecture.IdentityServer.Protocols.OAuth2
             Tracing.Information("Starting resource owner password credential flow for client: " + client.Name);
             var appliesTo = new EndpointReference(request.Scope);
 
-            if (string.IsNullOrWhiteSpace(request.UserName) || string.IsNullOrWhiteSpace(request.Password))
+            if (request.Grant_Type.Equals(OAuth2Constants.GrantTypes.Password))
             {
-                Tracing.Error("Invalid resource owner credentials for: " + appliesTo.Uri.AbsoluteUri);
-                return OAuthErrorResponseMessage(OAuth2Constants.Errors.InvalidGrant);
-            }
+                if (string.IsNullOrWhiteSpace(request.UserName) || string.IsNullOrWhiteSpace(request.Password))
+                {
+                    Tracing.Error("Invalid resource owner credentials for: " + appliesTo.Uri.AbsoluteUri);
+                    return OAuthErrorResponseMessage(OAuth2Constants.Errors.InvalidGrant);
+                }
 
-            if (UserRepository.ValidateUser(request.UserName, request.Password))
-            {
-                return CreateTokenResponse(request.UserName, client, appliesTo, tokenType, includeRefreshToken: client.AllowRefreshToken);
+                if (UserRepository.ValidateUser(request.UserName, request.Password))
+                {
+                    return CreateTokenResponse(request.UserName, client, appliesTo, tokenType, includeRefreshToken: client.AllowRefreshToken);
+                }
+                else
+                {
+                    Tracing.Error("Resource owner credential validation failed: " + request.UserName);
+                    return OAuthErrorResponseMessage(OAuth2Constants.Errors.InvalidGrant);
+                }
             }
-            else
-            {
-                Tracing.Error("Resource owner credential validation failed: " + request.UserName);
-                return OAuthErrorResponseMessage(OAuth2Constants.Errors.InvalidGrant);
-            }
+            else if (request.Grant_Type.Equals(OAuth2Constants.GrantTypes.Assertion)) {
+                if (string.IsNullOrWhiteSpace(request.Assertion) || string.IsNullOrWhiteSpace(request.Assertion_Type))
+                {
+                    Tracing.Error("Invalid resource owner credentials for: " + appliesTo.Uri.AbsoluteUri);
+                    return OAuthErrorResponseMessage(OAuth2Constants.Errors.InvalidGrant);
+                }
+
+                // Look at the assertion type now and apply the approapriate check
+
+                if (request.Assertion_Type.Equals("http://graph.facebook.com/me"))
+                {
+                    //Validate user token with Facebook
+                    FacebookUser user;
+                    try
+                    {
+                        user = new FacebookValidator(request.Assertion).ValidateAccessToken();
+                    }
+                    catch (Exception ex)
+                    {
+                        Tracing.Error("Invalid resource owner credentials for: " + appliesTo.Uri.AbsoluteUri);
+                        return OAuthErrorResponseMessage(OAuth2Constants.Errors.InvalidGrant);
+                    }
+
+                    //Validate the user in the users store.
+                    if (UserRepository.ValidateUser("damian", "L00sel1ps"))
+                    {
+                        return CreateTokenResponse("damian", client, appliesTo, tokenType, includeRefreshToken: client.AllowRefreshToken);
+                    }
+                    else
+                    {
+                        Tracing.Error("Resource owner credential validation failed: " + request.UserName);
+                        return OAuthErrorResponseMessage(OAuth2Constants.Errors.InvalidGrant);
+                    }
+                }
+
+            } 
+           
+            return OAuthErrorResponseMessage(OAuth2Constants.Errors.UnsupportedGrantType);
+            
         }
+
 
         private HttpResponseMessage ProcessAuthorizationCodeRequest(Client client, string code, string tokenType)
         {
@@ -191,7 +239,8 @@ namespace Thinktecture.IdentityServer.Protocols.OAuth2
             // check supported grant types
             if (!request.Grant_Type.Equals(OAuth2Constants.GrantTypes.AuthorizationCode) &&
                 !request.Grant_Type.Equals(OAuth2Constants.GrantTypes.Password) &&
-                !request.Grant_Type.Equals(OAuth2Constants.GrantTypes.RefreshToken))
+                !request.Grant_Type.Equals(OAuth2Constants.GrantTypes.RefreshToken) &&
+                !request.Grant_Type.Equals(OAuth2Constants.GrantTypes.Assertion))
             {
                 return OAuthErrorResponseMessage(OAuth2Constants.Errors.UnsupportedGrantType);
             }
@@ -226,7 +275,7 @@ namespace Thinktecture.IdentityServer.Protocols.OAuth2
                 }
             }
 
-            if (request.Grant_Type.Equals(OAuth2Constants.GrantTypes.Password))
+            if (request.Grant_Type.Equals(OAuth2Constants.GrantTypes.Password) || request.Grant_Type.Equals(OAuth2Constants.GrantTypes.Assertion))
             {
                 if (!ConfigurationRepository.OAuth2.EnableResourceOwnerFlow ||
                     !client.AllowResourceOwnerFlow)

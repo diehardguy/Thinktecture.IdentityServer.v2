@@ -149,10 +149,6 @@
       <Private>True</Private>
       <HintPath>..\..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
-    <Reference Include="Thinktecture.IdentityModel, Version=3.6.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Thinktecture.IdentityModel.3.6.0\lib\net45\Thinktecture.IdentityModel.dll</HintPath>
-    </Reference>
     <Reference Include="WebGrease, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\WebGrease.1.3.0\lib\WebGrease.dll</HintPath>
@@ -1270,6 +1266,10 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Thinktecture.IdentityModel.45\IdentityModel\Thinktecture.IdentityModel\Thinktecture.IdentityModel.45.csproj">
+      <Project>{ac9a74df-4aab-43c8-b0ed-b7602721e545}</Project>
+      <Name>Thinktecture.IdentityModel.45</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Libraries\Thinktecture.IdentityServer.Core.Repositories\Thinktecture.IdentityServer.Core.Repositories.csproj">
       <Project>{9658f86f-3059-4731-9eb0-5f67a4ff1a8a}</Project>
       <Name>Thinktecture.IdentityServer.Core.Repositories</Name>
@@ -1283,7 +1283,6 @@
       <Name>Thinktecture.IdentityServer.Protocols</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Areas\Admin\App_LocalResources\ClientCertificate\Configure.cshtml.fr.resx">
       <DependentUpon>Configure.cshtml.resx</DependentUpon>
