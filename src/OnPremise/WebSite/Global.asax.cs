@@ -9,6 +9,7 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using Thinktecture.IdentityServer.Repositories;
 using Thinktecture.IdentityServer.Repositories.Sql;
+using Kin.Identity.Repository;
 
 namespace Thinktecture.IdentityServer.Web
 {
@@ -46,7 +47,8 @@ namespace Thinktecture.IdentityServer.Web
 
         private void SetupCompositionContainer()
         {
-            Container.Current = new CompositionContainer(new RepositoryExportProvider());
+            var container = new CompositionContainer(new RepositoryExportProvider(), new KinExportProvider());
+            Container.Current = container;
         }
     }
 }

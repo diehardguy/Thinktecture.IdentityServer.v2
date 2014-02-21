@@ -48,17 +48,25 @@ namespace Thinktecture.IdentityServer.Protocols.Facebook
             //Get the users data from facebook
             try
             {
-                dynamic me = client.Get("me?fields=id,email,first_name,last_name,about,location,website", parameters);
-                return new FacebookUser() {
-                    Id = me.id,
-                    Email = me.email,
-                    FirstName = me.first_name,
-                    LastName = me.last_name,
-                    About = me.about,
-                    Location = me.location,
-                    Website = me.website
-                };
-
+                dynamic me = client.Get("me?fields=id,username,email,first_name,last_name,about,location,website", parameters);
+                if (me == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return new FacebookUser()
+                    {
+                        Id = me.id,
+                        UserName = me.username,
+                        Email = me.email,
+                        FirstName = me.first_name,
+                        LastName = me.last_name,
+                        About = me.about,
+                        Location = me.location,
+                        Website = me.website
+                    };
+                }
             }
             catch (FacebookApiException ex)
             {

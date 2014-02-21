@@ -17,6 +17,8 @@ namespace Thinktecture.IdentityServer
             public const string IdentityProvider = Base + "identityprovider";
             public const string Client = Base + "client";
             public const string Scope = Base + "scope";
+            public const string AssertionType = Base + "assertion_type";
+            public const string Assertion = Base + "assertion";
         }
 
         public static class Actions

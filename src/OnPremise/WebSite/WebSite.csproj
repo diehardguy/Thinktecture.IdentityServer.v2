@@ -1191,6 +1191,7 @@
     <Content Include="Areas\Admin\Views\Protocol\ADFSIntegration.cshtml" />
     <Content Include="Areas\Admin\Views\OpenIdConnectClient\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\OpenIdConnectClient\Index.cshtml" />
+    <Content Include="Configuration\kinRepositories.config" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.8.2.js" />
     <Content Include="Scripts\jquery-1.8.2.min.js" />
@@ -1269,6 +1270,10 @@
     <ProjectReference Include="..\..\..\..\Thinktecture.IdentityModel.45\IdentityModel\Thinktecture.IdentityModel\Thinktecture.IdentityModel.45.csproj">
       <Project>{ac9a74df-4aab-43c8-b0ed-b7602721e545}</Project>
       <Name>Thinktecture.IdentityModel.45</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\Kin.Identity.Repositories\Kin.Identity.Repository.csproj">
+      <Project>{08dab360-a8da-41a3-9dec-b06c58dda1f6}</Project>
+      <Name>Kin.Identity.Repository</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Libraries\Thinktecture.IdentityServer.Core.Repositories\Thinktecture.IdentityServer.Core.Repositories.csproj">
       <Project>{9658f86f-3059-4731-9eb0-5f67a4ff1a8a}</Project>
@@ -1648,7 +1653,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>1763</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost/idsvr</IISUrl>
+          <IISUrl>https://localhost/idsvr</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

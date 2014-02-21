@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSite", "src\OnPremise\WebSite\WebSite.csproj", "{060A3A55-69D0-4526-8372-8C400CFEC8CC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{D201FE12-A7CD-4344-B90A-7FBF2CD9C589}"
@@ -18,6 +20,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "src\Tests\Tests.csproj", "{E1C66C6B-634B-4582-A15C-B27887873C0E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thinktecture.IdentityServer.Protocols", "src\Libraries\Thinktecture.IdentityServer.Protocols\Thinktecture.IdentityServer.Protocols.csproj", "{C129C90C-774C-47D7-A19E-57B31C87AE18}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kin.Identity.Repository", "src\Libraries\Kin.Identity.Repositories\Kin.Identity.Repository.csproj", "{08DAB360-A8DA-41A3-9DEC-B06C58DDA1F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +49,10 @@ Global
 		{C129C90C-774C-47D7-A19E-57B31C87AE18}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C129C90C-774C-47D7-A19E-57B31C87AE18}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C129C90C-774C-47D7-A19E-57B31C87AE18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08DAB360-A8DA-41A3-9DEC-B06C58DDA1F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08DAB360-A8DA-41A3-9DEC-B06C58DDA1F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08DAB360-A8DA-41A3-9DEC-B06C58DDA1F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08DAB360-A8DA-41A3-9DEC-B06C58DDA1F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -53,5 +61,6 @@ Global
 		{38CE5C59-909E-4DA6-8E1D-7EEE7312CA9A} = {2B1ED56F-D37A-44C0-ABED-CD45218E59D3}
 		{9658F86F-3059-4731-9EB0-5F67A4FF1A8A} = {2B1ED56F-D37A-44C0-ABED-CD45218E59D3}
 		{C129C90C-774C-47D7-A19E-57B31C87AE18} = {2B1ED56F-D37A-44C0-ABED-CD45218E59D3}
+		{08DAB360-A8DA-41A3-9DEC-B06C58DDA1F6} = {2B1ED56F-D37A-44C0-ABED-CD45218E59D3}
 	EndGlobalSection
 EndGlobal

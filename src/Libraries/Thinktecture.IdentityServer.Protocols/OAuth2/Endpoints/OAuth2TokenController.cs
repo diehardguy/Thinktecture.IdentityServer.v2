@@ -15,6 +15,8 @@ using Thinktecture.IdentityModel.Constants;
 using Thinktecture.IdentityServer.Models;
 using Thinktecture.IdentityServer.Repositories;
 using Thinktecture.IdentityServer.Protocols.Facebook;
+using Microsoft.ServiceBus;
+using Microsoft.ServiceBus.Messaging;
 
 namespace Thinktecture.IdentityServer.Protocols.OAuth2
 {
@@ -93,9 +95,9 @@ namespace Thinktecture.IdentityServer.Protocols.OAuth2
                     return OAuthErrorResponseMessage(OAuth2Constants.Errors.InvalidGrant);
                 }
 
-                if (UserRepository.ValidateUser(request.UserName, request.Password))
+                if (UserRepository.ValidateUser(request.Assertion_Type, request.UserName))
                 {
-                    return CreateTokenResponse(request.UserName, client, appliesTo, tokenType, includeRefreshToken: client.AllowRefreshToken);
+                    return CreateTokenResponse(request.UserName, client, appliesTo, tokenType, string.Empty, string.Empty, includeRefreshToken: client.AllowRefreshToken);
                 }
                 else
                 {
@@ -111,8 +113,8 @@ namespace Thinktecture.IdentityServer.Protocols.OAuth2
                 }
 
                 // Look at the assertion type now and apply the approapriate check
-
-                if (request.Assertion_Type.Equals("http://graph.facebook.com/me"))
+                UserRepository.IsAssertion = true;
+                if (request.Assertion_Type.Equals("https://graph.facebook.com/me"))
                 {
                     //Validate user token with Facebook
                     FacebookUser user;
@@ -126,16 +128,42 @@ namespace Thinktecture.IdentityServer.Protocols.OAuth2
                         return OAuthErrorResponseMessage(OAuth2Constants.Errors.InvalidGrant);
                     }
 
-                    //Validate the user in the users store.
-                    if (UserRepository.ValidateUser("damian", "L00sel1ps"))
-                    {
-                        return CreateTokenResponse("damian", client, appliesTo, tokenType, includeRefreshToken: client.AllowRefreshToken);
-                    }
-                    else
+                    if (user == null)
                     {
                         Tracing.Error("Resource owner credential validation failed: " + request.UserName);
                         return OAuthErrorResponseMessage(OAuth2Constants.Errors.InvalidGrant);
                     }
+
+                    //Validate the user in the users store and return the users actual system id for the claims
+                    int? userID = UserRepository.ValidateUserAndRetreiveIdentifer(request.Assertion_Type, user.Id);
+                    if (!userID.HasValue)
+                    {
+                        //We need to register this user and then issue a token!
+                        if (UserRepository.CreateUser(user.Email, user.FirstName, 
+                            user.Email, user.Location, user.Id, user.UserName, request.Assertion_Type))
+                        {
+                            userID = UserRepository.ValidateUserAndRetreiveIdentifer(request.Assertion_Type, user.Id);
+
+                            //Send the user onto the profiling queue
+                            string connectionString = "Endpoint=sb://spotrbus.servicebus.windows.net/;SharedSecretIssuer=owner;SharedSecretValue=Df96DmLDWtkBKf5gpscsrvP2RDOF0oulzy03isjqIA4=";
+
+                            BrokeredMessage message = new BrokeredMessage(request.Assertion);
+                            message.Label = userID.ToString();
+                            QueueClient queueClient = QueueClient.CreateFromConnectionString(connectionString, "facebook-profiling-queue");
+                            queueClient.Send(message);
+
+                            return CreateTokenResponse(userID.Value.ToString(), client, appliesTo, tokenType,
+                            request.Assertion_Type, request.Assertion, includeRefreshToken: client.AllowRefreshToken);
+                        }
+                        else
+                        {
+                            Tracing.Error("Resource owner credential validation failed: " + request.UserName);
+                            return OAuthErrorResponseMessage(OAuth2Constants.Errors.InvalidGrant);
+                        }
+                    }
+
+                    return CreateTokenResponse(userID.Value.ToString(), client, appliesTo, tokenType,
+                            request.Assertion_Type, request.Assertion, includeRefreshToken: client.AllowRefreshToken);
                 }
 
             } 
@@ -169,7 +197,8 @@ namespace Thinktecture.IdentityServer.Protocols.OAuth2
                 if (token.ClientId == client.ID)
                 {
                     // 3. call STS 
-                    return CreateTokenResponse(token.UserName, client, new EndpointReference(token.Scope), tokenType, includeRefreshToken: client.AllowRefreshToken);
+                    return CreateTokenResponse(token.UserName, client, new EndpointReference(token.Scope), tokenType, string.Empty, string.Empty, 
+                        includeRefreshToken: client.AllowRefreshToken);
                 }
 
                 Tracing.Error("Invalid client for refresh token. " + client.Name + " / " + codeToken);
@@ -180,16 +209,26 @@ namespace Thinktecture.IdentityServer.Protocols.OAuth2
             return OAuthErrorResponseMessage(OAuth2Constants.Errors.InvalidGrant);
         }
 
-        private HttpResponseMessage CreateTokenResponse(string userName, Client client, EndpointReference scope, string tokenType, bool includeRefreshToken)
+        private HttpResponseMessage CreateTokenResponse(string userName, Client client, EndpointReference scope, string tokenType, 
+            string assertionType, string assertion, bool includeRefreshToken)
         {
             var auth = new AuthenticationHelper();
-
-            var principal = auth.CreatePrincipal(userName, "OAuth2",
-                    new Claim[]
-                        {
+            Claim[] claims = new Claim[] {
                             new Claim(Constants.Claims.Client, client.Name),
                             new Claim(Constants.Claims.Scope, scope.Uri.AbsoluteUri)
-                        });
+                        };
+
+            if (!string.IsNullOrEmpty(assertion) || !string.IsNullOrEmpty(assertionType) 
+                || !string.IsNullOrWhiteSpace(assertion) || !string.IsNullOrWhiteSpace(assertionType)) {
+                Claim[] assertionClaims = new Claim[] {
+                    new Claim(Constants.Claims.AssertionType, assertionType),
+                    new Claim(Constants.Claims.Assertion, assertion)
+                };
+                Array.Resize(ref claims, claims.Length + assertionClaims.Length);
+                assertionClaims.CopyTo(claims, claims.Length - assertionClaims.Length);
+            }
+
+            var principal = auth.CreatePrincipal(userName, "OAuth2", claims);
 
             if (!ClaimsAuthorization.CheckAccess(principal, Constants.Actions.Issue, Constants.Resources.OAuth2))
             {

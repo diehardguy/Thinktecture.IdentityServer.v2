@@ -10,8 +10,12 @@ namespace Thinktecture.IdentityServer.Repositories
 {
     public interface IUserRepository
     {
-        bool ValidateUser(string userName, string password);
+        bool ValidateUser(string username, string password);
+        int? ValidateUserAndRetreiveIdentifer(string username, string password);
         bool ValidateUser(X509Certificate2 clientCertificate, out string userName);
-        IEnumerable<string> GetRoles(string userName);        
+        IEnumerable<string> GetRoles(string userName);
+        bool IsAssertion { get; set; }
+        bool CreateUser(string email, string name, string username, string location,
+            string providerIdentifier, string providerNameIdentifier, string assertionType);
     }
 }
