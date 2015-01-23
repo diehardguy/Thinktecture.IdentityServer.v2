@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using Facebook;
+using System;
 using System.Security.Claims;
 using System.Security.Principal;
 using Thinktecture.IdentityServer.Protocols.Facebook;
@@ -39,7 +40,6 @@ namespace Thinktecture.IdentityServer.Protocols.Facebook
 
             //Create Facebook Client
             FacebookClient client = new FacebookClient(_accessToken);
-
             //Adding appsecret_Proof to Facebook request
             var parameters = new Dictionary<string, object>();
             string hexAppSecretProof = System.BitConverter.ToString(hmacBytes).Replace("-", "").ToLower();
@@ -48,7 +48,7 @@ namespace Thinktecture.IdentityServer.Protocols.Facebook
             //Get the users data from facebook
             try
             {
-                dynamic me = client.Get("me?fields=id,username,email,first_name,last_name,about,location,website", parameters);
+                dynamic me = client.Get("v2.0/me?fields=id,name,email,first_name,about,location,birthday,tagged_places", parameters);
                 if (me == null)
                 {
                     return null;
@@ -60,11 +60,9 @@ namespace Thinktecture.IdentityServer.Protocols.Facebook
                         Id = me.id,
                         UserName = me.username,
                         Email = me.email,
-                        FirstName = me.first_name,
-                        LastName = me.last_name,
-                        About = me.about,
-                        Location = me.location,
-                        Website = me.website
+                        Name = me.first_name,
+                        Location = me.location.name,
+                        BirthDay = DateTime.Parse(me.birthday)
                     };
                 }
             }

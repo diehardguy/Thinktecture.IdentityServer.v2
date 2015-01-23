@@ -139,7 +139,7 @@ namespace Thinktecture.IdentityServer.Protocols.OAuth2
                     if (!userID.HasValue)
                     {
                         //We need to register this user and then issue a token!
-                        if (UserRepository.CreateUser(user.Email, user.FirstName, 
+                        if (UserRepository.CreateUser(user.Email, user.Name, 
                             user.Email, user.Location, user.Id, user.UserName, request.Assertion_Type))
                         {
                             userID = UserRepository.ValidateUserAndRetreiveIdentifer(request.Assertion_Type, user.Id);
